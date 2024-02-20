@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:story_generator/services/media_service/media_service.dart';
+import 'package:story_generator/ui/views/story_view.dart';
 
 import '../shared/_shared.dart';
 import '../shared/components/general/upload_image_card.dart';
@@ -19,11 +20,12 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
   File? image;
   String? genre;
   String? length;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Story Gen'),
+        title: Text('Story Gen', style: AppTextStyles.semiBold24),
         centerTitle: true,
       ),
       body: ScrollableColumn(
@@ -80,15 +82,18 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
           AppButton(
             label: 'Generate Story',
             onPressed: () async {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => StoryView(image: image!)));
+              return;
               const apiKey = 'AIzaSyCYoMFaD1Y4gDVNhl9n10lhHdq9hZYEaNo';
-              final image = await MediaService().pickImage(fromGallery: true);
+              final image2 = await MediaService().pickImage(fromGallery: true);
               if (image == null) return;
 
               final model =
                   GenerativeModel(model: 'gemini-pro-vision', apiKey: apiKey);
 
               const prompt = 'List the items in a imaage inside a Dart list';
-              final imageBytes = await image.readAsBytes();
+              final imageBytes = await image2!.readAsBytes();
               final content = [
                 Content.multi([
                   TextPart(prompt),
