@@ -1,6 +1,6 @@
-import 'dart:async';
 import 'dart:io';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:story_generator/models/story_params.dart';
@@ -25,70 +25,62 @@ class StoryView extends StatefulWidget {
 
 class _StoryViewState extends State<StoryView> {
   final IAIService _aiService = AIService();
-  late StreamSubscription<String> _storySubscription;
-  final _storyController = StreamController<String>();
   String story = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _storySubscription =
-        _aiService.streamStoryDetail(widget.storyParams).listen((event) {
-      print(event);
-      _storyController.add(event);
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _storyController.close();
-    _storySubscription.cancel();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Story Gen', style: AppTextStyles.semiBold24),
+        title: Text(
+          "Here's your ${widget.storyParams.genre} story",
+          style: AppTextStyles.semiBold18,
+        ),
         centerTitle: true,
       ),
-      body: ListView(
+      body: ScrollableColumn(
         children: [
           Image.file(widget.image, fit: BoxFit.cover),
-          Padding(
-            padding: REdgeInsets.all(16),
-            child: StreamBuilder<String>(
-              stream: _storyController.stream,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: AppLoader());
-                }
-                if (snapshot.data == null) {
-                  return Column(
-                    children: [
-                      const Text('Try again'),
-                      Spacing.vertRegular(),
-                      AppButton(
-                        label: 'Refresh',
-                        onPressed: () {
-                          _storySubscription.cancel();
-                          story = '';
-                          _storySubscription = _aiService
-                              .streamStoryDetail(widget.storyParams)
-                              .listen((event) => _storyController.add(event));
-                        },
-                      )
-                    ],
-                  );
-                }
-                story += snapshot.data ?? '';
+          Expanded(
+            child: Container(
+              alignment: Alignment.topLeft,
+              padding: REdgeInsets.all(16),
+              child: FutureBuilder<String>(
+                initialData: story,
+                future: _aiService.fetchStoryDetail(widget.storyParams),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: AppLoader(color: AppColors.bidPry400),
+                    );
+                  }
+                  if (snapshot.data == null) {
+                    return Column(
+                      children: [
+                        const Text('Try again'),
+                        Spacing.vertRegular(),
+                        AppButton(
+                          label: 'Refresh',
+                          onPressed: () {
+                            setState(() {});
+                          },
+                        )
+                      ],
+                    );
+                  }
+                  story += snapshot.data ?? '';
 
-                return Text(
-                  story,
-                  style: AppTextStyles.regular14,
-                );
-              },
+                  return DefaultTextStyle(
+                    style: AppTextStyles.regular14.copyWith(
+                      color: AppColors.black,
+                    ),
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        TyperAnimatedText(snapshot.data ?? story),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],

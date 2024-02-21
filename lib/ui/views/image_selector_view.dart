@@ -80,7 +80,7 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
           AppDropdownField(
             label: 'Story Length',
             hint: 'Select length',
-            items: const ['Long', 'Medium', 'Short'],
+            items: AppConstants.storyLength,
             value: length,
             onChanged: (val) => length = val!,
           ),

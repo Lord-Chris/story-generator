@@ -18,4 +18,6 @@ class AppConstants {
     "Humor",
     "Young adult",
   ];
+
+  static const List<String> storyLength = ['Long', 'Medium', 'Short'];
 }

@@ -6,4 +6,6 @@ abstract class IAIService {
   Future<List<String>> getItemsFromImage(File image);
 
   Stream<String> streamStoryDetail(StoryParams storyParams);
+
+  Future<String> fetchStoryDetail(StoryParams storyParams);
 }
