@@ -9,10 +9,11 @@ class AppColors {
   static const transparent = Colors.transparent;
 
   // ----------------------Named Colors From UI------------------
-  static const bidPry400 = Color.fromARGB(255, 94, 150, 247);
-  static const bidPry500 = Color.fromARGB(255, 0, 88, 240);
-  static const bidPry600 = Color.fromARGB(255, 0, 87, 227);
-  static const bidPry800 = Color.fromARGB(255, 0, 80, 218);
+  static const bidPry400 = Color(0xFF5C79A9);
+  static const bidPry500 = Color(0xFF334A8C);
+  static const bidPry600 = Color(0xFF475984);
+  static const bidPry800 = Color(0xFF334E93);
+
   static const gray50 = Color(0XFFF9FAFB);
   static const gray100 = Color(0XFFF2F4F7);
   static const gray200 = Color(0XFFEAECF0);

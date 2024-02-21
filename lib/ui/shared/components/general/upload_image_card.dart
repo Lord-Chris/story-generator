@@ -18,13 +18,13 @@ class UploadImageCard extends StatelessWidget {
         width: double.maxFinite,
         padding: REdgeInsets.fromLTRB(24, 16, 24, 16),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.gray200, width: 1),
+          border: Border.all(color: AppColors.bidPry500, width: 1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Icons.image),
+            const Icon(Icons.image, color: AppColors.bidPry500),
             Spacing.vertRegular(),
             Text.rich(
               TextSpan(

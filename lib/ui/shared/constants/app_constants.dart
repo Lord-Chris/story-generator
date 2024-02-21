@@ -7,7 +7,7 @@ class AppConstants {
       'https://valhala-stg.s3.eu-west-2.amazonaws.com/avatar/woman-graduating-with-certificate-avatar-character-vector-25010708.jpg';
 
   static const List<String> genres = [
-    "Children bedtime story",
+    "Children bedtime",
     "Adventure",
     "Mystery",
     "Romance",
@@ -20,4 +20,19 @@ class AppConstants {
   ];
 
   static const List<String> storyLength = ['Long', 'Medium', 'Short'];
+
+  static const List<String> languages = [
+    "English",
+    "Pidgin English",
+    "Mandarin Chinese",
+    "Spanish",
+    // "Igbo",
+    "Hindi",
+    // "Yoruba",
+    "Arabic",
+    "Portuguese",
+    "Russian",
+    "Japanese",
+    "German",
+  ];
 }

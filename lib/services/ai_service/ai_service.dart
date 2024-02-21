@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -40,13 +41,17 @@ class AIService extends IAIService {
         Content.multi([TextPart(listPrompt), DataPart('image/png', imageBytes)])
       ];
 
-      final res = await imageModel.generateContent(content);
+      final res = await imageModel
+          .generateContent(content)
+          .timeout(const Duration(seconds: 10));
       _log.d(jsonDecode(res.text ?? ""));
       final parsedRes = (jsonDecode(res.text ?? '') as Map<String, dynamic>);
       final data =
           (parsedRes["data"] as List).map((e) => ItemData.fromMap(e)).toList();
 
       return data.map((e) => e.value).toList();
+    } on TimeoutException {
+      throw InternetFailure();
     } catch (e, s) {
       _log.e(e, stackTrace: s);
       throw Failure(
@@ -67,7 +72,8 @@ class AIService extends IAIService {
       final content = [Content.text(prompt)];
       final response = textModel.generateContentStream(content);
       return response.map((event) => event.text ?? 'No story generated.');
-    } catch (e) {
+    } catch (e, s) {
+      _log.e(e, stackTrace: s);
       throw Failure(
         message: 'Something went wrong generating your story. Try again later',
         data: e,
@@ -82,11 +88,18 @@ class AIService extends IAIService {
           'Create a bedtime story from items in this list: ${storyParams.items}.';
       prompt += 'The story should be a ${storyParams.genre} story.';
       prompt += 'The story MUST be ${storyParams.parsedLength} long.';
-      // ' The story should be in a Nigerian setting and should be in Pidgin english';
+      prompt +=
+          'The story MUST be in ${storyParams.language} lanuage and the story must be from the culture where ${storyParams.language} is spoken';
       final content = [Content.text(prompt)];
-      final response = await textModel.generateContent(content);
+      final response = await textModel
+          .generateContent(content)
+          .timeout(const Duration(seconds: 10));
+      _log.d(response.text);
       return response.text ?? 'No story generated.';
-    } catch (e) {
+    } on TimeoutException {
+      throw InternetFailure();
+    } catch (e, s) {
+      _log.e(e, stackTrace: s);
       throw Failure(
         message: 'Something went wrong generating your story. Try again later',
         data: e,

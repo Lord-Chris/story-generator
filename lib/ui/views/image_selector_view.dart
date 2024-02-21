@@ -25,8 +25,9 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
   final IAIService _aiService = AIService();
   File? image;
   String genre = AppConstants.genres.first;
-  String length = 'Medium';
+  String length = AppConstants.storyLength.first;
   bool isBusy = false;
+  String language = AppConstants.languages.first;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +85,14 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
             value: length,
             onChanged: (val) => length = val!,
           ),
+          Spacing.vertRegular(),
+          AppDropdownField(
+            label: 'Language',
+            hint: 'Select language',
+            items: AppConstants.languages,
+            value: language,
+            onChanged: (val) => language = val!,
+          ),
           const Spacer(),
           Spacing.vertRegular(),
           AppButton(
@@ -114,6 +123,7 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
                   items: items,
                   genre: genre,
                   length: length,
+                  language: language,
                 );
 
                 Navigator.push(

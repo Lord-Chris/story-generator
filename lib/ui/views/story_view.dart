@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:story_generator/models/failure.dart';
 import 'package:story_generator/models/story_params.dart';
 
 import '../../services/ai_service/ai_service.dart';
@@ -25,7 +26,26 @@ class StoryView extends StatefulWidget {
 
 class _StoryViewState extends State<StoryView> {
   final IAIService _aiService = AIService();
+  bool isBusy = false;
+  IFailure? failure;
   String story = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchStory();
+  }
+
+  Future<void> _fetchStory() async {
+    try {
+      setState(() => isBusy = true);
+      story = await _aiService.fetchStoryDetail(widget.storyParams);
+    } on IFailure catch (e) {
+      failure = e;
+    } finally {
+      setState(() => isBusy = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +53,7 @@ class _StoryViewState extends State<StoryView> {
       appBar: AppBar(
         title: Text(
           "Here's your ${widget.storyParams.genre} story",
-          style: AppTextStyles.semiBold18,
+          style: AppTextStyles.semiBold16,
         ),
         centerTitle: true,
       ),
@@ -44,38 +64,42 @@ class _StoryViewState extends State<StoryView> {
             child: Container(
               alignment: Alignment.topLeft,
               padding: REdgeInsets.all(16),
-              child: FutureBuilder<String>(
-                initialData: story,
-                future: _aiService.fetchStoryDetail(widget.storyParams),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+              child: Builder(
+                builder: (context) {
+                  if (isBusy) {
                     return const Center(
                       child: AppLoader(color: AppColors.bidPry400),
                     );
                   }
-                  if (snapshot.data == null) {
-                    return Column(
-                      children: [
-                        const Text('Try again'),
-                        Spacing.vertRegular(),
-                        AppButton(
-                          label: 'Refresh',
-                          onPressed: () {
-                            setState(() {});
-                          },
-                        )
-                      ],
+                  if (failure != null && story.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text('Try again'),
+                          Spacing.vertRegular(),
+                          AppButton(
+                            label: 'Refresh',
+                            isCollapsed: true,
+                            onPressed: () => _fetchStory(),
+                          )
+                        ],
+                      ),
                     );
                   }
-                  story += snapshot.data ?? '';
 
                   return DefaultTextStyle(
                     style: AppTextStyles.regular14.copyWith(
                       color: AppColors.black,
                     ),
                     child: AnimatedTextKit(
+                      totalRepeatCount: 1,
                       animatedTexts: [
-                        TyperAnimatedText(snapshot.data ?? story),
+                        TyperAnimatedText(
+                          story,
+                          speed: const Duration(milliseconds: 20),
+                        ),
                       ],
                     ),
                   );
