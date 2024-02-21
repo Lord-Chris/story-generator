@@ -5,3 +5,5 @@ class AppConstants {
   static const mockTestsImage =
       'https://valhala-stg.s3.eu-west-2.amazonaws.com/avatar/woman-graduating-with-certificate-avatar-character-vector-25010708.jpg';
 }
+
+

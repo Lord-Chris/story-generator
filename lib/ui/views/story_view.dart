@@ -3,14 +3,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:story_generator/models/story_params.dart';
+
 import '../shared/_shared.dart';
 
 class StoryView extends StatefulWidget {
   final File image;
+  final StoryParams storyParams;
 
   const StoryView({
     Key? key,
     required this.image,
+    required this.storyParams,
   }) : super(key: key);
 
   @override

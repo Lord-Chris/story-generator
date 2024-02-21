@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:story_generator/models/story_params.dart';
+import 'package:story_generator/services/ai_service/ai_service.dart';
+import 'package:story_generator/services/ai_service/i_ai_service.dart';
 import 'package:story_generator/services/media_service/media_service.dart';
 import 'package:story_generator/ui/views/story_view.dart';
 
@@ -17,9 +21,11 @@ class ImageSelectorView extends StatefulWidget {
 }
 
 class _ImageSelectorViewState extends State<ImageSelectorView> {
+  final IAIService _aiService = AIService();
   File? image;
-  String? genre;
-  String? length;
+  String genre = 'Bedtime story';
+  String length = 'Medium';
+  bool isBusy = false;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +73,7 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
               'Bedtime story',
             ],
             value: genre,
-            onChanged: (val) => genre = val,
+            onChanged: (val) => genre = val!,
           ),
           Spacing.vertRegular(),
           AppDropdownField(
@@ -75,44 +81,55 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
             hint: 'Select length',
             items: const ['Long', 'Medium', 'Short'],
             value: length,
-            onChanged: (val) => length = val,
+            onChanged: (val) => length = val!,
           ),
           const Spacer(),
           Spacing.vertRegular(),
           AppButton(
             label: 'Generate Story',
+            isBusy: isBusy,
             onPressed: () async {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => StoryView(image: image!)));
-              return;
-              const apiKey = 'AIzaSyCYoMFaD1Y4gDVNhl9n10lhHdq9hZYEaNo';
-              final image2 = await MediaService().pickImage(fromGallery: true);
-              if (image == null) return;
+              try {
+                setState(() => isBusy = true);
+                if (image == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select an image')),
+                  );
+                  return;
+                }
+                final items = await _aiService.getItemsFromImage(image!);
+                if (items.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'No items found in this image, please select another image.',
+                      ),
+                    ),
+                  );
+                  return;
+                }
 
-              final model =
-                  GenerativeModel(model: 'gemini-pro-vision', apiKey: apiKey);
+                final params = StoryParams(
+                  items: items,
+                  genre: genre,
+                  length: length,
+                );
 
-              const prompt = 'List the items in a imaage inside a Dart list';
-              final imageBytes = await image2!.readAsBytes();
-              final content = [
-                Content.multi([
-                  TextPart(prompt),
-                  DataPart('image/png', imageBytes),
-                ])
-              ];
-
-              final response = await model.generateContent(content);
-              print(response.text);
-
-              print('\n');
-
-              final model2 =
-                  GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
-              final prompt2 =
-                  'Create a bedtime story from items in this list: ${response.text}. The story should be in a Nigerian setting and should be in Pidgin english';
-              final content2 = [Content.text(prompt2)];
-              final response2 = await model2.generateContent(content2);
-              print(response2.text);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        StoryView(image: image!, storyParams: params),
+                  ),
+                );
+              } catch (e) {
+                debugPrint(e.toString());
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.toString())),
+                );
+              } finally {
+                setState(() => isBusy = false);
+              }
             },
           ),
         ],
