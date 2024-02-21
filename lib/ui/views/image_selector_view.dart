@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:story_generator/models/failure.dart';
 import 'package:story_generator/models/story_params.dart';
 import 'package:story_generator/services/ai_service/ai_service.dart';
 import 'package:story_generator/services/ai_service/i_ai_service.dart';
@@ -23,7 +24,7 @@ class ImageSelectorView extends StatefulWidget {
 class _ImageSelectorViewState extends State<ImageSelectorView> {
   final IAIService _aiService = AIService();
   File? image;
-  String genre = 'Bedtime story';
+  String genre = AppConstants.genres.first;
   String length = 'Medium';
   bool isBusy = false;
 
@@ -47,7 +48,9 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
           Spacing.vertSmall(),
           UploadImageCard(
             onTap: () async {
-              image = await MediaService().pickImage(fromGallery: true);
+              final fromGallery = await const ImageSourceDialog().show(context);
+              if (fromGallery == null) return;
+              image = await MediaService().pickImage(fromGallery: fromGallery);
               setState(() {});
             },
           ),
@@ -69,9 +72,7 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
           AppDropdownField(
             label: 'Genre',
             hint: 'Select genre',
-            items: const [
-              'Bedtime story',
-            ],
+            items: AppConstants.genres,
             value: genre,
             onChanged: (val) => genre = val!,
           ),
@@ -122,8 +123,11 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
                         StoryView(image: image!, storyParams: params),
                   ),
                 );
+              } on IFailure catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.message)),
+                );
               } catch (e) {
-                debugPrint(e.toString());
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(e.toString())),
                 );

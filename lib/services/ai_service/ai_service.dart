@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:logger/logger.dart';
+import 'package:story_generator/models/failure.dart';
 import 'package:story_generator/models/item_data.dart';
 import 'package:story_generator/services/ai_service/i_ai_service.dart';
 import 'package:story_generator/ui/shared/constants/env_data.dart';
@@ -33,29 +34,44 @@ class AIService extends IAIService {
 } ''';
   @override
   Future<List<String>> getItemsFromImage(File image) async {
-    final imageBytes = await image.readAsBytes();
-    final content = [
-      Content.multi([TextPart(listPrompt), DataPart('image/png', imageBytes)])
-    ];
+    try {
+      final imageBytes = await image.readAsBytes();
+      final content = [
+        Content.multi([TextPart(listPrompt), DataPart('image/png', imageBytes)])
+      ];
 
-    final res = await imageModel.generateContent(content);
-    _log.d(jsonDecode(res.text ?? ""));
-    final parsedRes = (jsonDecode(res.text ?? '') as Map<String, dynamic>);
-    final data =
-        (parsedRes["data"] as List).map((e) => ItemData.fromMap(e)).toList();
+      final res = await imageModel.generateContent(content);
+      _log.d(jsonDecode(res.text ?? ""));
+      final parsedRes = (jsonDecode(res.text ?? '') as Map<String, dynamic>);
+      final data =
+          (parsedRes["data"] as List).map((e) => ItemData.fromMap(e)).toList();
 
-    return data.map((e) => e.value).toList();
+      return data.map((e) => e.value).toList();
+    } catch (e) {
+      _log.e(e);
+      throw Failure(
+        message: 'Something went wrong identifying items. Try again.',
+        data: e,
+      );
+    }
   }
 
   @override
   Stream<String> streamStoryDetail(StoryParams storyParams) {
-    String prompt =
-        'Create a bedtime story from items in this list: ${storyParams.items}.';
-    prompt += 'The story should be a ${storyParams.genre} story.';
-    prompt += 'The story should be ${storyParams.parsedLength} long.';
-    // ' The story should be in a Nigerian setting and should be in Pidgin english';
-    final content = [Content.text(prompt)];
-    final response = textModel.generateContentStream(content);
-    return response.map((event) => event.text ?? 'No story generated.');
+    try {
+      String prompt =
+          'Create a bedtime story from items in this list: ${storyParams.items}.';
+      prompt += 'The story should be a ${storyParams.genre} story.';
+      prompt += 'The story MUST be ${storyParams.parsedLength} long.';
+      // ' The story should be in a Nigerian setting and should be in Pidgin english';
+      final content = [Content.text(prompt)];
+      final response = textModel.generateContentStream(content);
+      return response.map((event) => event.text ?? 'No story generated.');
+    } catch (e) {
+      throw Failure(
+        message: 'Something went wrong generating your story. Try again later',
+        data: e,
+      );
+    }
   }
 }
