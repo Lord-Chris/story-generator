@@ -1,16 +1,18 @@
-# story_generator
+# Story Generator
+Story Generator is a mobile app that generates random stories based on user input. The app is built using Flutter, a cross-platform mobile development framework by Google.
 
-A new Flutter project.
+## Features
+- **Animations**: Use of *animated_text_kit* to animate text widget.
+- **Responsive Design**: The app is responsive across screen sizes.
+- **Generative AI**: The app uses a generative model to generate stories based on user input.
 
-## Getting Started
+## Mobile App
+Story Generator app is built using the following technologies:
 
-This project is a starting point for a Flutter application.
+- [Flutter](https://flutter.dev/), a cross-platform mobile development framework by Google.
+- [Google Generative AI](https://pub.dev/packages/google_generative_ai), a Flutter package that provides access to Google's generative AI models.
 
-A few resources to get you started if this is your first Flutter project:
+**Story Generator can be previewed on iOS and Android.*
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Video Demo
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
