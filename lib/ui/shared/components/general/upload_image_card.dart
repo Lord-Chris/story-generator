@@ -40,7 +40,7 @@ class UploadImageCard extends StatelessWidget {
             ),
             Spacing.vertTiny(),
             Text(
-              'PNG, JPG or JPEG (max. 800x400px)',
+              'PNG, JPG or JPEG',
               style: AppTextStyles.regular12.copyWith(
                 color: AppColors.gray600,
               ),

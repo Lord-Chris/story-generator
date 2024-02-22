@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       designSize: const Size(375, 812),
       builder: (context, _) {
         return MaterialApp(
-          title: 'Flutter Demo',
+          title: AppConstants.appName,
           theme: AppTheme.theme,
           home: const ImageSelectorView(),
         );

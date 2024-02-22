@@ -16,8 +16,8 @@ class MediaService extends IMediaService {
       final XFile? image = await _picker.pickImage(
           source: fromGallery ? ImageSource.gallery : ImageSource.camera);
       if (image == null) return null;
-
       final file = File(image.path);
+
       return file;
     } on Exception catch (e) {
       _log.e(e);

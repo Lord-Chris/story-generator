@@ -43,7 +43,7 @@ class AIService extends IAIService {
 
       final res = await imageModel
           .generateContent(content)
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 30));
       _log.d(jsonDecode(res.text ?? ""));
       final parsedRes = (jsonDecode(res.text ?? '') as Map<String, dynamic>);
       final data =
@@ -93,7 +93,7 @@ class AIService extends IAIService {
       final content = [Content.text(prompt)];
       final response = await textModel
           .generateContent(content)
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 30));
       _log.d(response.text);
       return response.text ?? 'No story generated.';
     } on TimeoutException {

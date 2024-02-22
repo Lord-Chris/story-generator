@@ -12,7 +12,7 @@ class StoryParams {
   });
 
   String get parsedLength {
-    switch (length) {
+    switch (length.toLowerCase()) {
       case 'short':
         return 'at least 3 paragraphs';
       case 'medium':

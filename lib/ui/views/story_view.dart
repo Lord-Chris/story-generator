@@ -52,7 +52,7 @@ class _StoryViewState extends State<StoryView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Here's your ${widget.storyParams.genre} story",
+          "Here's your ${widget.storyParams.genre.toLowerCase()} story",
           style: AppTextStyles.semiBold16,
         ),
         centerTitle: true,

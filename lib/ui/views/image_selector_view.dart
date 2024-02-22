@@ -33,7 +33,7 @@ class _ImageSelectorViewState extends State<ImageSelectorView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Story Gen', style: AppTextStyles.semiBold24),
+        title: Text(AppConstants.appName, style: AppTextStyles.semiBold18),
         centerTitle: true,
       ),
       body: ScrollableColumn(
