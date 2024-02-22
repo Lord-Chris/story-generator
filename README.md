@@ -15,4 +15,5 @@ Story Generator app is built using the following technologies:
 **Story Generator can be previewed on iOS and Android.*
 
 ## Video Demo
+![story_gen](https://github.com/Lord-Chris/story-generator/assets/58702861/1d59b122-3c45-49c7-a122-4ec0f9c8c4fc)
 
