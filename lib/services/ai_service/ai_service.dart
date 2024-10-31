@@ -13,26 +13,20 @@ import '../../models/story_params.dart';
 
 class AIService extends IAIService {
   final _log = Logger();
+
   final imageModel = GenerativeModel(
-    model: 'gemini-pro-vision',
+    model: 'gemini-1.5-flash-latest',
     apiKey: EnvData.apiKey,
   );
   final textModel = GenerativeModel(
-    model: 'gemini-pro',
+    model: 'gemini-1.5-pro',
     apiKey: EnvData.apiKey,
   );
 
   static const listPrompt =
       '''In this image, identify and label all visible objects with a confidence score above 70%. Return the results as a JSON object with the following structure:'''
-      '''{
-  "data": [
-    {
-      "name": "object_name",
-      "description": "brief description"
-    },
-    ... (other objects)
-  ]
-} ''';
+      '''{"name": "object name", "description": "object description"}''';
+
   @override
   Future<List<String>> getItemsFromImage(File image) async {
     try {
@@ -42,12 +36,25 @@ class AIService extends IAIService {
       ];
 
       final res = await imageModel
-          .generateContent(content)
+          .generateContent(
+            content,
+            generationConfig: GenerationConfig(
+              responseMimeType: 'application/json',
+              responseSchema: Schema.array(
+                nullable: false,
+                items: Schema.object(
+                  properties: {
+                    'name': Schema.string(nullable: false),
+                    'description': Schema.string(nullable: false),
+                  },
+                ),
+              ),
+            ),
+          )
           .timeout(const Duration(seconds: 30));
       _log.d(jsonDecode(res.text ?? ""));
-      final parsedRes = (jsonDecode(res.text ?? '') as Map<String, dynamic>);
-      final data =
-          (parsedRes["data"] as List).map((e) => ItemData.fromMap(e)).toList();
+      final parsedRes = jsonDecode(res.text ?? '');
+      final data = (parsedRes as List).map((e) => ItemData.fromMap(e)).toList();
 
       return data.map((e) => e.value).toList();
     } on TimeoutException {
@@ -91,9 +98,17 @@ class AIService extends IAIService {
       prompt +=
           'The story MUST be in ${storyParams.language} lanuage and the story must be from the culture where ${storyParams.language} is spoken';
       final content = [Content.text(prompt)];
+
       final response = await textModel
-          .generateContent(content)
+          .generateContent(
+            content,
+            generationConfig: GenerationConfig(
+              responseMimeType: 'application/json',
+              responseSchema: Schema.string(nullable: false),
+            ),
+          )
           .timeout(const Duration(seconds: 30));
+
       _log.d(response.text);
       return response.text ?? 'No story generated.';
     } on TimeoutException {

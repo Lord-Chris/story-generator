@@ -35,7 +35,7 @@ dependencies:
   flutter_hooks: ^0.20.5
   flutter_image_compress: ^2.1.0
   flutter_screenutil: ^5.9.0
-  google_generative_ai: ^0.2.0
+  google_generative_ai: ^0.4.6
   image_picker: ^1.0.7
   logger: ^2.0.2+1
 
