@@ -14,6 +14,19 @@ Story Generator app is built using the following technologies:
 
 **Story Generator can be previewed on iOS and Android.*
 
+## Setting up Project
+- Requirements: 
+  - [Flutter SDK](https://flutter.dev/)
+  - [Gemini API Key](https://aistudio.google.com/app/apikey)
+- Setup your env file:
+  - Create a .env folder
+  - Create an env.json file and add the following content
+    ```
+    {
+      "API_KEY": "<Your API Key>"
+    }
+    ```
+
 ## Video Demo
 ![story_gen](https://github.com/Lord-Chris/story-generator/assets/58702861/1d59b122-3c45-49c7-a122-4ec0f9c8c4fc)
 
